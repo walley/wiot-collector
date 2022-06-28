@@ -66,7 +66,7 @@ foreach $s (keys %iot)
 #main process
   syslog("info","Parent $$");
 
-  print Dumper(\%iot)."\n";
+  &debug_print(Dumper(\%iot)."\n");
 
   while(1) {
 
@@ -143,39 +143,38 @@ foreach $s (keys %iot)
       if ($s1 =~ /sn\:([A-Za-z0-9]*),/) {
         $sn = $1;
         $data_to_send{$sn} = $s1;
-        print "1 sn $sn\n";
+        &debug_print("1 sn $sn\n");
       }
     } else {
-      print "no 1\n";
+      &debug_print("no 1\n");
     }
 
     if ($s2 ne "") {
       if ($s2 =~ /sn\:([A-Za-z0-9]*),/) {
         $sn = $1;
         $data_to_send{$sn} = $s2;
-        print "2 sn $sn\n";
+        &debug_print("2 sn $sn\n");
       }
     } else {
-      print "no 2\n";
+      &debug_print("no 2\n");
     }
 
     if (defined $s3) {
       if ($s3 =~ /sn\:([A-Za-z0-9]*),/) {
         $sn = $1;
         $data_to_send{$sn} = $s3;
-        print "3 sn $sn\n";
+        &debug_print("3 sn $sn\n");
       }
     } else {
-      print "no 3\n";
+      &debug_print("no 3\n");
     }
 
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
-#    print "$hour:$min:$sec\n";
 
     if (!($sec % 20) or !($sec % 19)) {
       my $i;
       foreach $i (keys %data_to_send) {
-        print "to send $i\n";
+        &debug_print("to send $i\n");
         &send_data($data_to_send{$i});
       }
 
@@ -236,15 +235,15 @@ sub child()
   $port->parity("none");
   $port->stopbits(1);
 
-  print "start\n";
+  &debug_print("start\n");
   while (1) {
     my $char = $port->lookfor();
     my $char2 = $port->lookfor();
     if ($char) {
-      print "$char\n";
+      &debug_print("$char\n");
     }
     if ($char2) {
-      print "$char2\n";
+      &debug_print("$char2\n");
     }
 
 
@@ -304,15 +303,12 @@ sub send_data()
   my $response = $ua->post( $url, { 'w_sensor' => $data } );
   my $resp  = $response->decoded_content();
 
-  print "Received reply: $resp\n";
-
+  &debug_print("Received reply: $resp\n");
 
   if ($resp ne "OK") {
     my $ts = time;
 
     $data =~ s/\;/,ts\:$ts\;/g;
-
-#print "$data\n";
 
     $query = "insert into fail values (null, ?)";
     my $sth = $dbh->do($query, undef, $data) or do {
@@ -362,13 +358,13 @@ sub is_child()
 ################################################################################
 {
   foreach $i (keys %iot) {
-    print "ischild:" . $iot{$i}{pid} . ".\n";
+    &debug_print("ischild:" . $iot{$i}{pid} . ".\n");
 
     if (!$iot{$i}{pid}) {
-      print"zero\n";
+      &debug_print("zero\n");
       return 1;
     } else {
-      print"not zero\n";
+      &debug_print("not zero\n");
     }
 
   }
