@@ -1,0 +1,21 @@
+CREATE TABLE sensors(
+id integer primary key AUTOINCREMENT,
+sn numeric unique,
+note varchar
+);
+CREATE TABLE data(
+id integer primary key AUTOINCREMENT,
+sn numeric,
+ts numeric,
+pq varchar, -- physical quantity
+value varchar,
+systemts DATETIME DEFAULT (strftime('%s','now'))
+);
+CREATE TABLE input (
+id integer primary key AUTOINCREMENT,
+sn varchar,
+variable varchar,
+value numeric,
+type varchar
+);
+CREATE INDEX tsindex ON data (sn, pq, systemts);
