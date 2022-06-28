@@ -23,6 +23,8 @@ use LWP::UserAgent;
 use Sys::Syslog;
 use DBI;
 
+#version 1.0
+
 ### config ###
 my $url = "http://grezl.eu/wiot/v1/sensor";
 my $dbpath = "/usr/local/share/wiot";
@@ -377,10 +379,6 @@ sub get_usb_devices()
 ################################################################################
 {
   opendir(my $dh, "/dev/");
-#  while(readdir $dh) {
-#    print "$some_dir/$_\n";
-#  }
-#  my @usbs = grep { /^ttyUSB/ && -f "/dev/$_" } readdir($dh);
   my @usbs = grep { /^ttyUSB/} readdir($dh);
   closedir $dh;
   return @usbs;
