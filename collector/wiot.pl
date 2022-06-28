@@ -23,12 +23,13 @@ use LWP::UserAgent;
 use Sys::Syslog;
 use DBI;
 
-#version 1.0
 
 ### config ###
 my $url = "http://grezl.eu/wiot/v1/sensor";
 my $dbpath = "/usr/local/share/wiot";
 ##############
+
+my $debug = 0;
 
 my %iot;
 my $ua = LWP::UserAgent->new;
@@ -401,5 +402,15 @@ sub connect_db
   if (!$dbh) {
     syslog('info', "Cannot connect to db: " . $DBI::errstr);
     die;
+  }
+}
+
+################################################################################
+sub debug_print()
+################################################################################
+{
+  my $data = shift;
+  if ($debug) {
+    print $data
   }
 }
