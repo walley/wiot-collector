@@ -5,4 +5,6 @@ packages
 
 libdevice-serialport-perl
 libdbi-perl
-lwp
+libwww-perl (lwp)
+
+libdbd-sqlite3-perl
