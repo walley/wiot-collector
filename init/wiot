@@ -24,8 +24,9 @@ case "$1" in
 	;;
   restart|reload|force-reload)
 	
-	stop
-	start
+	$0 stop
+        sleep 1
+	$0 start
 	;;
   stop)
 	killall wiot.pl
