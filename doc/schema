@@ -18,4 +18,10 @@ variable varchar,
 value numeric,
 type varchar
 );
+
+create table fail(
+ id integer primary key AUTOINCREMENT,
+ data varchar
+)
+
 CREATE INDEX tsindex ON data (sn, pq, systemts);

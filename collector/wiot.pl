@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-#   Copyright (C) 2015-2020 Michal Grezl
+#   Copyright (C) 2015-2022 Michal Grezl
 #
 #    This file is part of wiot.
 #
@@ -70,9 +70,13 @@ foreach $s (keys %iot)
 
   while(1) {
 
+    &debug_print("loop");
+
     $s1 = <BAR>;
     $s2 = <FOO>;
     $s3 = <POO>;
+
+    &debug_print("continue");
 
     if (defined $s1) {
       chomp $s1;
@@ -84,12 +88,12 @@ foreach $s (keys %iot)
         syslog("info", "gud1: $s1");
         my %data = split /[:,]/, $line;
       } else {
-        syslog("info", "bad1: $s1");
+        &debug_print("bad1: $s1");
         undef $s1;
       }
 
     } else {
-      syslog("info", "child 1 dead");
+      &debug_print("child 1 dead");
       close BAR;
     }
 
@@ -112,7 +116,7 @@ foreach $s (keys %iot)
       }
 
     } else {
-      syslog("info", "child 2 dead");
+      &debug_print("child 2 dead");
       close FOO;
     }
 
@@ -127,7 +131,7 @@ foreach $s (keys %iot)
 
       if ($s3 =~ /^(type.*)\;$/) {
         $line = $1;
-        syslog("info", "gud3: $s3");
+        &debug_print("gud3: $s3");
         my %data = split /[:,]/, $line;
       } else {
         syslog("info", "bad3: $s3");
@@ -135,7 +139,7 @@ foreach $s (keys %iot)
       }
 
     } else {
-      syslog("info", "child 3 dead");
+      &debug_print("child 3 dead");
       close POO;
     }
 
@@ -146,7 +150,7 @@ foreach $s (keys %iot)
         &debug_print("1 sn $sn\n");
       }
     } else {
-      &debug_print("no 1\n");
+      &debug_print("no 1, $s1");
     }
 
     if ($s2 ne "") {
@@ -156,7 +160,7 @@ foreach $s (keys %iot)
         &debug_print("2 sn $sn\n");
       }
     } else {
-      &debug_print("no 2\n");
+      &debug_print("no 2");
     }
 
     if (defined $s3) {
@@ -230,20 +234,21 @@ sub child()
   syslog("info", "Child pid:$mypid on dev:$dev");
   my $port = Device::SerialPort->new($dev) or die "child cannot open ".$dev;
 
-  $port->baudrate(9600);
+#  $port->baudrate(9600);
+  $port->baudrate(115200);
   $port->databits(8);
   $port->parity("none");
   $port->stopbits(1);
 
-  &debug_print("start\n");
+  &debug_print("start");
   while (1) {
     my $char = $port->lookfor();
     my $char2 = $port->lookfor();
     if ($char) {
-      &debug_print("$char\n");
+      &debug_print("$char");
     }
     if ($char2) {
-      &debug_print("$char2\n");
+      &debug_print("$char2");
     }
 
 
@@ -407,6 +412,7 @@ sub debug_print()
 {
   my $data = shift;
   if ($debug) {
-    print $data
+    print "$data\n";
+    syslog("debug", $data);
   }
 }
