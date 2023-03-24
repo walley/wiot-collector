@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-#   Copyright (C) 2015-2022 Michal Grezl
+#   Copyright (C) 2015-2023 Michal Grezl
 #
 #    This file is part of wiot.
 #
